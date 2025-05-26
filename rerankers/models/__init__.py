@@ -1,4 +1,4 @@
-AVAILABLE_RANKERS = {}
+AVAILABLE_RANKERS = {}  # 可用的rerank工具【有13个】
 
 try:
     from rerankers.models.transformer_ranker import TransformerRanker

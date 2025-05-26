@@ -34,6 +34,7 @@ def test_transformer_ranker_rank(mock_rank):
         has_scores=True,
     )
     mock_rank.return_value = expected_results
-    ranker = TransformerRanker("mixedbread-ai/mxbai-rerank-xsmall-v1")
+    # ranker = TransformerRanker("mixedbread-ai/mxbai-rerank-xsmall-v1")
+    ranker = TransformerRanker(r"E:\aiModel\maxkbModel\rerank\bge-reranker-v2-m3")
     results = ranker.rank(query=query, docs=docs)
     assert results == expected_results

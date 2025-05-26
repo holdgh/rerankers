@@ -51,7 +51,7 @@ SCORE_KEY_MAPPING = {
     "isaacus":"score",
 }
 
-class APIRanker(BaseRanker):
+class APIRanker(BaseRanker):  # 集成各种外部rerank接口
     def __init__(self, model: str, api_key: str, api_provider: str, verbose: int = 1, url: str = None):
         self.api_provider = api_provider.lower()
         self.api_key = API_KEY_MAPPING.get(self.api_provider,Template("Bearer $api_key")).substitute(api_key=api_key)

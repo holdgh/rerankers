@@ -30,6 +30,17 @@ class TransformerRanker(BaseRanker):
         self.verbose = verbose
         self.device = get_device(device, verbose=self.verbose)
         self.dtype = get_dtype(dtype, self.device, self.verbose)
+        # monoBERT 就是最原始的BERT用法，将查询与段落按照BERT的方式拼接，计算他们之间的相关性分数，论文将这种方式称为 Pointwise re-ranker。阶段 H 1 H_{1} H1 基于 monoBERT 生成的相关性分数，输出 top- k 1 k_{1} k1 个候选 R 1 R_{1} R1
+        """
+        机器学习中有三种排序模型：
+        pointwise: 直接预测每个文档和问题的相关分数。一定程度上缺少了文档之间的排序关系。
+        pairwise: 将排序问题转化为对两两文档的比较【类似于llm-sort的思想】。
+        listwise: 直接学习文档之间的排序关系。使用每个文档的top-1概率分布作为排序列表，并使用交叉熵损失来优化。
+        科普：top-1准确率与top-5准确率
+            背景：分类任务中，假设样本有50个类别，通过模型可以得到对应样本属于这50个类别的概率值
+        top-1准确率：概率值排名第一的类别为样本的真实类别。对应有top-1错误率。
+        top-5准确率：概率值排名在前五的类别中包含样本的真实类别。对应有top-5错误率。
+        """
         self.is_monobert = "monobert" in model_name_or_path.lower()
         model_kwargs = kwargs.get("model_kwargs", {})
         self.model = AutoModelForSequenceClassification.from_pretrained(
@@ -46,7 +57,7 @@ class TransformerRanker(BaseRanker):
             model_name_or_path,
             **tokenizer_kwargs,
         )
-        self.ranking_type = "pointwise"
+        self.ranking_type = "pointwise"  # 逐个文档处理，计算与问题的相关得分，然后排序
         self.batch_size = batch_size
 
     def tokenize(self, inputs: Union[str, List[str], List[Tuple[str, str]]]):
