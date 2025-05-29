@@ -108,10 +108,10 @@ class APIRanker(BaseRanker):  # 集成各种外部rerank接口
         doc_ids: Optional[Union[List[str], List[int]]] = None,
         metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
-        docs = prep_docs(docs, doc_ids, metadata)
-        payload = self._format_payload(query, docs)
-        response = requests.post(self.url, headers=self.headers, data=payload)
-        results = self._parse_response(response.json(), docs)
+        docs = prep_docs(docs, doc_ids, metadata)  # 预处理文档列表【索引、元数据】
+        payload = self._format_payload(query, docs)  # 封装接口入参
+        response = requests.post(self.url, headers=self.headers, data=payload)  # 调用在线rerank操作接口
+        results = self._parse_response(response.json(), docs)  # 统一解析封装rerank接口返回值
         return RankedResults(results=results, query=query, has_scores=True)
 
 

@@ -69,55 +69,67 @@ def prep_docs(
     docs: Union[str, List[str], Document, List[Document]],
     doc_ids: Optional[Union[List[str], List[int]]] = None,
     metadata: Optional[List[dict]] = None,
-):
+):  # 文档列表预处理操作【文档对象时，处理文档id和文档元数据】
+    # ===文档对象（列表）处理-start===
     if isinstance(docs, Document) or (
         isinstance(docs, List) and isinstance(docs[0], Document)
-    ):
+    ):  # ===文档对象类型检查-start===
         if isinstance(docs, Document):
             docs = [docs]
+        # ===文档对象类型检查-end===
+        # ===获取文档id列表-start===
         if doc_ids is not None:
             if docs[0].doc_id is not None:
                 print(
                     "Overriding doc_ids passed within the Document objects with explicitly passed doc_ids!"
-                )
+                )  # 用显式传递的doc_ids覆盖Document对象中传递的doc_ids
                 print(
                     "This is not the preferred way of doing so, please double-check your code."
-                )
+                )  # 这不是首选的方法，请仔细检查您的代码
             for i, doc in enumerate(docs):
-                doc.doc_id = doc_ids[i]
+                doc.doc_id = doc_ids[i]  # 显示赋予文档id【文档列表和文档id列表一一对应】
 
-        elif doc_ids is None:
-            doc_ids = [doc.doc_id for doc in docs]
+        elif doc_ids is None:  # 当没有传递文档id列表时
+            doc_ids = [doc.doc_id for doc in docs]  # 从文档列表中获取文档id列表
             if doc_ids[0] is None:
                 print(
                     "'None' doc_ids detected, reverting to auto-generated integer ids..."
-                )
-                doc_ids = list(range(len(docs)))
-
+                )  # 文档id为空，采取自动生成正数id
+                # doc_ids = list(range(len(docs)))  # 原代码
+                # TODO 这里缺失赋予文档对象的文档id
+                for i, doc in enumerate(docs):  # 更新代码
+                    doc.doc_id = i
+        # ===获取文档id列表-end===
+        # ===文档元数据处理-start===
         if metadata is not None:
             if docs[0].meatadata is not None:
+                # TODO 下述打印逻辑写错了吧？与上述获取文档id列表时的打印内容一样？
                 print(
                     "Overriding doc_ids passed within the Document objects with explicitly passed doc_ids!"
                 )
                 print(
                     "This is not the preferred way of doing so, please double-check your code."
                 )
-            for i, doc in enumerate(docs):
+            for i, doc in enumerate(docs):  # 逐个赋予文档元数据
                 doc.metadata = metadata[i]
-
+        # ===文档元数据处理-end===
         return docs
-
+    # ===文档对象（列表）处理-end===
+    # ===文本字符串处理-start===
+    # 列表化
     if isinstance(docs, str):
         docs = [docs]
+    # 传文档id列表时，采用传值；反之采用生成的整数id列表
     if doc_ids is None:
         doc_ids = list(range(len(docs)))
-    if metadata is None:
+    if metadata is None:  # 设置文档元数据为空
         metadata = [{} for _ in docs]
 
     return [
         Document(doc, doc_id=doc_ids[i], metadata=metadata[i])
         for i, doc in enumerate(docs)
-    ]
+    ]  # 创建文档对象列表
+    # ===文本字符串处理-end===
 
 
 def prep_image_docs(
