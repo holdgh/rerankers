@@ -305,7 +305,7 @@ class ColBERTRanker(BaseRanker):  # 类似于基于embedding模型计算相似�
                 sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)  # 按照相关性得分降序排列
             )
         ]
-        return RankedResults(results=ranked_results, query=query, has_scores=True)
+        return RankedResults(results=ranked_results, query=query, has_scores=True, rank_method_name='colbert_ranker')
 
     def score(self, query: str, doc: str) -> float:
         scores = self._colbert_rank(query, [doc])

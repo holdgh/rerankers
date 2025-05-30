@@ -223,7 +223,7 @@ class TransformerRanker(BaseRanker):  # 朴素意义的rerank模型推理
                     sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)  # 按照相关性得分从大到小排序
                 )
             ]
-            return RankedResults(results=ranked_results, query=query, has_scores=True)
+            return RankedResults(results=ranked_results, query=query, has_scores=True, rank_method_name='transformer_ranker')
 
     @torch.inference_mode()
     def score(self, query: str, doc: str) -> float:

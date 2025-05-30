@@ -1,3 +1,4 @@
+import math
 from typing import List, Optional, Union
 
 from rerankers.documents import Document
@@ -36,10 +37,12 @@ class Result:
 
 
 class RankedResults:
-    def __init__(self, results: List[Result], query: str, has_scores: bool = False):
+    def __init__(self, results: List[Result], query: str, has_scores: bool = False, rank_method_name: str = '你猜'):
         self.results = results
         self.query = query
         self.has_scores = has_scores
+        self.rank_method_name = rank_method_name
+        self.sigmoid_score()  # 将相关性分值通过sigmoid函数映射到(0,1)
 
     def __iter__(self):
         """Allows iteration over the results list."""
@@ -52,6 +55,21 @@ class RankedResults:
     def results_count(self) -> int:
         """Returns the total number of results."""
         return len(self.results)
+
+    def __str__(self):  # 重写当前类实例的打印结果，便于直观打印
+        str_res = 'rank算法名称：' + self.rank_method_name + '\nquery信息：' + self.query + '\n排序结果：\n'
+        for result in self.results[:-1]:
+            str_res = str_res + '文档内容：' + result.document.text + '，排名：' + str(result.rank) + '，相关性得分：' + str(
+                result.score) + '\n'
+        str_res = str_res + '文档内容：' + self.results[-1].document.text + '，排名：' + str(
+            self.results[-1].rank) + '，相关性得分：' + str(self.results[-1].score)
+        return str_res
+
+    def sigmoid_score(self):
+        def sigmoid_func(x):
+            return 1 / (1 + math.e ** (-1 * x))
+        for res in self.results:
+            res.score = sigmoid_func(res.score)
 
     def top_k(self, k: int) -> List[Result]:
         """Returns the top k results based on the score, if available, or rank."""

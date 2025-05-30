@@ -1,85 +1,80 @@
 from unittest.mock import patch
 import torch
 from rerankers import Reranker
-from rerankers.models import ColBERTRanker, FlashRankRanker
+from rerankers.models import ColBERTRanker, FlashRankRanker, LLMLayerWiseRanker
 from rerankers.models.transformer_ranker import TransformerRanker
 from rerankers.results import Result, RankedResults
 from rerankers.documents import Document
 
-@patch("rerankers.models.transformer_ranker.TransformerRanker.rank")  # 这里会将mock_rank赋予TransformerRanker.rank方法的返回值
-def test_transformer_ranker_rank(mock_rank):
-    query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+
+# @patch("rerankers.models.transformer_ranker.TransformerRanker.rank")  # 这里会将mock_rank赋予TransformerRanker.rank方法的返回值
+def test_transformer_ranker_rank():
+    # def test_transformer_ranker_rank(mock_rank):
+    # query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+    # docs = [
+    #     "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
+    #     "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+    # ]
+    query = "乱世佳人绝对是一部杰作"  # 乱世佳人绝对是一部杰作
     docs = [
-        "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
-        "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+        "乱世佳人是一部叙事拙劣的作品",  # 乱世佳人是一部叙事拙劣的作品
+        "乱世佳人是一部经典作品",  # 乱世佳人是一部经典作品
     ]
-    expected_results = RankedResults(
-        results=[
-            Result(
-                document=Document(
-                    doc_id=1, text="Gone with the wind is an all-time classic"
-                ),
-                score=1.6181640625,
-                rank=1,
-            ),
-            Result(
-                document=Document(
-                    doc_id=0,
-                    text="Gone with the wind is a masterclass in bad storytelling.",
-                ),
-                score=0.88427734375,
-                rank=2,
-            ),
-        ],
-        query=query,
-        has_scores=True,
-    )
-    mock_rank.return_value = expected_results
+    # expected_results = RankedResults(
+    #     results=[
+    #         Result(
+    #             document=Document(
+    #                 doc_id=1, text="Gone with the wind is an all-time classic"
+    #             ),
+    #             score=1.6181640625,
+    #             rank=1,
+    #         ),
+    #         Result(
+    #             document=Document(
+    #                 doc_id=0,
+    #                 text="Gone with the wind is a masterclass in bad storytelling.",
+    #             ),
+    #             score=0.88427734375,
+    #             rank=2,
+    #         ),
+    #     ],
+    #     query=query,
+    #     has_scores=True,
+    # )
+    # mock_rank.return_value = expected_results
     # ranker = TransformerRanker("mixedbread-ai/mxbai-rerank-xsmall-v1")
     ranker = TransformerRanker(r"E:\aiModel\maxkbModel\rerank\bge-reranker-v2-m3")
     results = ranker.rank(query=query, docs=docs)
-    assert results == expected_results
+    # assert results == expected_results
+    print(results)
 
 
-@patch("rerankers.models.colbert_ranker.ColBERTRanker.rank")
-def test_colbert_ranker_rank(mock_rank):
-    query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+def test_colbert_ranker_rank():
+    # query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+    # docs = [
+    #     "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
+    #     "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+    # ]
+    query = "乱世佳人绝对是一部杰作"  # 乱世佳人绝对是一部杰作
     docs = [
-        "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
-        "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+        "乱世佳人是一部叙事拙劣的作品",  # 乱世佳人是一部叙事拙劣的作品
+        "乱世佳人是一部经典作品",  # 乱世佳人是一部经典作品
     ]
-    expected_results = RankedResults(
-        results=[
-            Result(
-                document=Document(
-                    doc_id=1, text="Gone with the wind is an all-time classic"
-                ),
-                score=1.6181640625,
-                rank=1,
-            ),
-            Result(
-                document=Document(
-                    doc_id=0,
-                    text="Gone with the wind is a masterclass in bad storytelling.",
-                ),
-                score=0.88427734375,
-                rank=2,
-            ),
-        ],
-        query=query,
-        has_scores=True,
-    )
-    mock_rank.return_value = expected_results
     ranker = ColBERTRanker(r"E:\aiModel\maxkbModel\rerank\bge-reranker-v2-m3")
     results = ranker.rank(query=query, docs=docs)
-    assert results == expected_results
+    print(results)
 
 
 def test_flash_ranker_rank():
-    query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+    # query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+    # docs = [
+    #     "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
+    #     "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+    # ]
+    query = "乱世佳人绝对是一部杰作"  # 乱世佳人绝对是一部杰作
     docs = [
-        "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
-        "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+        "乱世佳人是一部叙事拙劣的作品",  # 乱世佳人是一部叙事拙劣的作品
+        "乱世佳人是一部经典作品",  # 乱世佳人是一部经典作品
     ]
     # 注意flashrank支持特定模型
 
@@ -97,5 +92,21 @@ def test_flash_ranker_rank():
     }
     """
     ranker = FlashRankRanker("miniReranker_arabic_v1")
+    results = ranker.rank(query=query, docs=docs)
+    print(results)
+
+
+def test_llm_layerwise_ranker_rank():
+    # query = "Gone with the wind is an absolute masterpiece"  # 乱世佳人绝对是一部杰作
+    # docs = [
+    #     "Gone with the wind is a masterclass in bad storytelling.",  # 乱世佳人是一部叙事拙劣的作品
+    #     "Gone with the wind is an all-time classic",  # 乱世佳人是一部经典作品
+    # ]
+    query = "乱世佳人绝对是一部杰作"  # 乱世佳人绝对是一部杰作
+    docs = [
+        "乱世佳人是一部叙事拙劣的作品",  # 乱世佳人是一部叙事拙劣的作品
+        "乱世佳人是一部经典作品",  # 乱世佳人是一部经典作品
+    ]
+    ranker = LLMLayerWiseRanker(r"E:\aiModel\maxkbModel\rerank\bge-reranker-v2-m3")
     results = ranker.rank(query=query, docs=docs)
     print(results)

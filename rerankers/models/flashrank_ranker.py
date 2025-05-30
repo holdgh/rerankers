@@ -69,7 +69,7 @@ class FlashRankRanker(BaseRanker):  # flashrank 使用轻量级神经网络模�
             for idx, result in enumerate(flashrank_results)
         ]
         
-        return RankedResults(results=ranked_results, query=query, has_scores=True)
+        return RankedResults(results=ranked_results, query=query, has_scores=True, rank_method_name='flashrank_ranker')
 
     def score(self, query: str, doc: str) -> float:
         rerank_request = RerankRequest(
